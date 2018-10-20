@@ -10,32 +10,14 @@ namespace UnmanagedCodeTest
     [TestClass]
     public class TextRendererTest
     {
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Init();
-
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SetImageProperties(ref ImageProperties imageProps);
-
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SetTextProperties(ref TextProperties textProps, out bool fontExists);
-
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int RenderString([MarshalAs(UnmanagedType.LPWStr)] string str, int strLen, IntPtr imageBuffer, ref D2D1_RECT_F rect, bool clearBackground);
-
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int RenderString2([MarshalAs(UnmanagedType.LPWStr)] string str, int strLen, ref D2D1_POINT_2F pBaselineOrigin, ref D2D1_RECT_F pTextBounds, bool clearBackground, bool drawBoundingBoxes, IntPtr pImageBuffer);
-
-        [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ReleaseAll();
+        
 
         [TestMethod]
-        public void TestInit()
+        public void RenderTest()
         {
-
-
             try
             {
-                int hres = Init();
+                int hres = TextRenderer.Init();
                 if (hres < 0)
                 {
                     throw new Exception("Init function failed with code " + hres);
@@ -49,7 +31,7 @@ namespace UnmanagedCodeTest
                     WICPixelFormat = GUID.WICPixelFormat32bppRGBA
                 };
 
-                hres = SetImageProperties(ref imageProps);
+                hres = TextRenderer.SetImageProperties(ref imageProps);
                 if (hres < 0)
                 {
                     throw new Exception("SetImageSize function failed with code " + hres);
@@ -74,7 +56,7 @@ namespace UnmanagedCodeTest
                         FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL
                     };
 
-                    hres = SetTextProperties(ref textProps, out bool fontExists);
+                    hres = TextRenderer.SetTextProperties(ref textProps, out bool fontExists);
                     if (hres < 0)
                     {
                         throw new Exception("SetTextProperties function failed with code " + hres);
@@ -102,10 +84,10 @@ namespace UnmanagedCodeTest
                     Bitmap bmp = new Bitmap(imageProps.ImageHeight, imageProps.ImageWidth, PixelFormat.Format32bppArgb);
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
-                    string text = "Looooooooooooooooooooooooooooooong";
-                    //string text = "This is really cool";
+                    //string text = "Looooooooooooooooooooooooooooooong";
+                    string text = "This is a very loooooooooooooong tessssssssssssst string";
                     //hres = RenderString(text, text.Length, bmpData.Scan0, ref boundingRect, true);
-                    hres = RenderString2(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0);
+                    hres = TextRenderer.RenderString2(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0);
                     if (hres < 0)
                     {
                         throw new Exception("RenderString function failed with code " + hres);
@@ -128,9 +110,22 @@ namespace UnmanagedCodeTest
             }
             finally
             {
-                ReleaseAll();
+                TextRenderer.ReleaseAll();
             }
+        }
 
+        [TestMethod]
+        public void InteractiveTest()
+        {
+            RenderForm rf = new RenderForm();
+            if (rf.Status < 0)
+            {
+                Assert.Fail("One of the functions with status code " + rf.Status);
+            }
+            else
+            {
+                rf.ShowDialog();
+            }
         }
     }
 }

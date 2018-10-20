@@ -73,7 +73,14 @@
     </Compile>
     <Compile Include="GUID.cs" />
     <Compile Include="ImageProperties.cs" />
+    <Compile Include="RenderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RenderForm.Designer.cs">
+      <DependentUpon>RenderForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextProperties.cs" />
+    <Compile Include="TextRenderer.cs" />
     <Compile Include="TextRendererTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,6 +90,9 @@
   <ItemGroup>
     <EmbeddedResource Include="FontApprovalForm.resx">
       <DependentUpon>FontApprovalForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RenderForm.resx">
+      <DependentUpon>RenderForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
