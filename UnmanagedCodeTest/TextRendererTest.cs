@@ -102,8 +102,8 @@ namespace UnmanagedCodeTest
                     Bitmap bmp = new Bitmap(imageProps.ImageHeight, imageProps.ImageWidth, PixelFormat.Format32bppArgb);
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
-                    string text = "Loooooooooooooooong";
-                    //string text = "Swing";
+                    string text = "Loooooooooooooong";
+                    //string text = "This is really cool";
                     //hres = RenderString(text, text.Length, bmpData.Scan0, ref boundingRect, true);
                     hres = RenderString2(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0);
                     if (hres < 0)
