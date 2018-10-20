@@ -1,0 +1,88 @@
+Adobe Caslon Pro
+Adobe Devanagari
+Adobe Garamond Pro
+Adobe Gurmukhi
+Adobe Hebrew
+Ailerons
+Algerian
+Arial
+Arkhip
+Bahnschrift
+Bauhaus 93
+Bell MT
+BigNoodleTitling
+Birch Std
+Blackadder ITC
+Blackoak Std
+Bodoni PosterCompressed
+Bookman Old Style
+Brush Script Std
+Buxton Sketch
+Centaur
+Chaparral Pro
+Edwardian Script ITC
+Fabrica
+Forte
+French Script MT
+Gabriola
+Garamond
+Geared Slab
+Georgia
+Giddyup Std
+Haettenschweiler
+Harrington
+Hobo Std
+Jaapokki enchance
+Kristen ITC
+Letter Gothic Std
+Lucida Bright
+Lucida Calligraphy
+Lucida Console
+Lucida Fax
+Lucida Handwriting
+Lucida Sans Typewriter
+Lucida Sans
+Maiandra GD
+MANIFESTO
+Mesquite Std
+Microsoft Himalaya
+Microsoft Sans Serif
+Minion Pro
+Modern No. 20
+Mongolian Baiti
+Moonshiner Lines
+Moonshiner
+MS Gothic
+MS PGothic
+MS Reference Sans Serif
+MS UI Gothic
+Myriad Pro
+nevis
+Nueva Std
+OCR A Std
+Orator Std
+PMingLiU-ExtB
+Prestige Elite Std
+Pristina
+Rhetoric
+Roboto
+Rockwell
+Segoe Marker
+Showcard Gothic
+SimSun-ExtB
+Sitka Banner
+Sitka Heading
+Sitka Subheading
+SketchFlow Print
+Slot
+Stencil Std
+Tahoma
+Tekton Pro
+Telegrafico
+Timber
+Times New Roman
+Trajan Pro
+Verdana
+Viner Hand ITC
+Vivaldi
+WP DOMINO novel
