@@ -10,7 +10,7 @@ namespace UnmanagedCodeTest
     public static class TextRenderer
     {
         [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Init();
+        public static extern int Initialize();
 
         [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int SetImageProperties(ref ImageProperties imageProps);
@@ -19,12 +19,12 @@ namespace UnmanagedCodeTest
         public static extern int SetTextProperties(ref TextProperties textProps, out bool fontExists);
 
         [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int RenderString([MarshalAs(UnmanagedType.LPWStr)] string str, int strLen, IntPtr imageBuffer, ref D2D1_RECT_F rect, bool clearBackground);
+        public static extern int RenderString([MarshalAs(UnmanagedType.LPWStr)] string str, int strLen, ref D2D1_POINT_2F pBaselineOrigin, ref D2D1_RECT_F pTextBounds, bool clearBackground, bool drawBoundingBoxes, IntPtr pImageBuffer, out IntPtr ppOutBoundingBoxes, out int boundingBoxesCount);
 
         [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int RenderString2([MarshalAs(UnmanagedType.LPWStr)] string str, int strLen, ref D2D1_POINT_2F pBaselineOrigin, ref D2D1_RECT_F pTextBounds, bool clearBackground, bool drawBoundingBoxes, IntPtr pImageBuffer);
+        public static extern void DeleteArray(IntPtr arr);
 
         [DllImport("TextRenderer.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ReleaseAll();
+        public static extern void Uninitialize();
     }
 }

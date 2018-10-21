@@ -17,7 +17,7 @@ namespace UnmanagedCodeTest
         {
             try
             {
-                int hres = TextRenderer.Init();
+                int hres = TextRenderer.Initialize();
                 if (hres < 0)
                 {
                     throw new Exception("Init function failed with code " + hres);
@@ -84,15 +84,14 @@ namespace UnmanagedCodeTest
                     Bitmap bmp = new Bitmap(imageProps.ImageHeight, imageProps.ImageWidth, PixelFormat.Format32bppArgb);
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
-                    //string text = "Looooooooooooooooooooooooooooooong";
                     string text = "This is a very loooooooooooooong tessssssssssssst string";
-                    //hres = RenderString(text, text.Length, bmpData.Scan0, ref boundingRect, true);
-                    hres = TextRenderer.RenderString2(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0);
+                    hres = TextRenderer.RenderString(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
                     if (hres < 0)
                     {
                         throw new Exception("RenderString function failed with code " + hres);
                     }
 
+                    TextRenderer.DeleteArray(boundingBoxesPtr);
                     bmp.UnlockBits(bmpData);
 
                     //FontApprovalForm form = new FontApprovalForm(bmp, font.Name);
@@ -110,7 +109,7 @@ namespace UnmanagedCodeTest
             }
             finally
             {
-                TextRenderer.ReleaseAll();
+                TextRenderer.Uninitialize();
             }
         }
 

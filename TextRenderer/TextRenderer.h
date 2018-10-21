@@ -26,9 +26,9 @@ typedef struct
 
 } TextProperties;
 
-extern "C" TEXTRENDERER_API int Init();
+extern "C" TEXTRENDERER_API int Initialize();
 extern "C" TEXTRENDERER_API int SetImageProperties(ImageProperties* imageProps);
 extern "C" TEXTRENDERER_API int SetTextProperties(TextProperties* textProps, BOOL* fontExists);
-extern "C" TEXTRENDERER_API HRESULT RenderString(wchar_t* str, int strLen, BYTE* imageBuffer, D2D1_RECT_F* textBounds, BOOL clearBackground);
-extern "C" TEXTRENDERER_API HRESULT RenderString2(wchar_t* str, int strLen, D2D1_POINT_2F* pBaselineOrigin, D2D1_RECT_F* pTextBounds, BOOL clearBackground, BOOL drawBoundingBoxes, BYTE* pImageBuffer);
-extern "C" TEXTRENDERER_API void ReleaseAll();
+extern "C" TEXTRENDERER_API HRESULT RenderString(wchar_t* str, int strLen, D2D1_POINT_2F* pBaselineOrigin, D2D1_RECT_F* pTextBounds, BOOL clearBackground, BOOL drawBoundingBoxes, BYTE* pImageBuffer, D2D1_RECT_F** ppOutBoundingBoxes, int* boundingBoxesCount);
+extern "C" TEXTRENDERER_API void DeleteArray(void* arr);
+extern "C" TEXTRENDERER_API void Uninitialize();

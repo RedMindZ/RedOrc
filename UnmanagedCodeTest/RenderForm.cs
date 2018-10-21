@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,7 +47,7 @@ namespace UnmanagedCodeTest
                 FontWeightInput.Items.Add(fontWeight);
             }
 
-            Status = TextRenderer.Init();
+            Status = TextRenderer.Initialize();
 
             if (Status < 0)
             {
@@ -131,7 +132,7 @@ namespace UnmanagedCodeTest
             Stopwatch watch = new Stopwatch();
 
             watch.Start();
-            Status = TextRenderer.RenderString2(TextInput.Text, TextInput.Text.Length, ref baselineOrigin, ref boundingRect, true, DrawRectanglesInput.Checked, bmpData.Scan0);
+            Status = TextRenderer.RenderString(TextInput.Text, TextInput.Text.Length, ref baselineOrigin, ref boundingRect, true, DrawRectanglesInput.Checked, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
             watch.Stop();
 
             bmp.UnlockBits(bmpData);
@@ -143,14 +144,27 @@ namespace UnmanagedCodeTest
             }
 
             DiagnosticsTextBox.Clear();
-            DiagnosticsTextBox.AppendText(string.Format("Render time: {0:0.##}ms", watch.Elapsed.TotalMilliseconds));
+            DiagnosticsTextBox.AppendText(string.Format("Render time: {0:0.##}ms\n", watch.Elapsed.TotalMilliseconds));
+
+            DiagnosticsTextBox.AppendText("Bounding boxes count: " + boundingBoxesCount + "\n");
+
+            int boxPtrOffset = 0;
+            for (int i = 0; i < boundingBoxesCount; i++)
+            {
+                D2D1_RECT_F box = Marshal.PtrToStructure<D2D1_RECT_F>(boundingBoxesPtr + boxPtrOffset);
+                boxPtrOffset += Marshal.SizeOf<D2D1_RECT_F>();
+
+                DiagnosticsTextBox.AppendText($"{{{box.Left}, {box.Top}, {box.Right}, {box.Bottom}}}\n");
+            }
+
+            TextRenderer.DeleteArray(boundingBoxesPtr);
 
             RenderBox.Image = bmp;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            TextRenderer.ReleaseAll();
+            TextRenderer.Uninitialize();
 
             base.OnClosing(e);
         }
