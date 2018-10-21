@@ -79,9 +79,24 @@
             // FontSizeInput
             // 
             this.FontSizeInput.Location = new System.Drawing.Point(12, 187);
+            this.FontSizeInput.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.FontSizeInput.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.FontSizeInput.Name = "FontSizeInput";
             this.FontSizeInput.Size = new System.Drawing.Size(275, 20);
             this.FontSizeInput.TabIndex = 4;
+            this.FontSizeInput.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.FontSizeInput.ValueChanged += new System.EventHandler(this.DrawString);
             // 
             // FontStyleInput
