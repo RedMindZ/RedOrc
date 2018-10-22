@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)UnmanagedCodeTest\</OutDir>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)UnmanagedCodeTest\</OutDir>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)UnmanagedCodeTest\</OutDir>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)UnmanagedCodeTest\</OutDir>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,8 +101,11 @@
       <AdditionalDependencies>d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)TextRenderer.dll" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.dll"
-copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.pdb"</Command>
+      <Command>copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\bin\x86\$(Configuration)\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\bin\x86\$(Configuration)\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\$(TargetName).pdb"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,8 +123,13 @@ copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\Unma
       <AdditionalDependencies>d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)TextRenderer.dll" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.dll"
-copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.pdb"</Command>
+      <Command>copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\bin\x64\$(Configuration)\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\bin\x64\$(Configuration)\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)RedOrc\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)RedOrc\$(TargetName).pdb"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,8 +151,11 @@ copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\Unma
       <AdditionalDependencies>d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)TextRenderer.dll" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.dll"
-copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.pdb"</Command>
+      <Command>copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\bin\x86\$(Configuration)\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\bin\x86\$(Configuration)\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\$(TargetName).pdb"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -166,8 +177,13 @@ copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\Unma
       <AdditionalDependencies>d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(OutDir)TextRenderer.dll" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.dll"
-copy "$(OutDir)TextRenderer.pdb" "D:\Programing Stuff\Mixed Projects\RedOrc\UnmanagedCodeTest\bin\Debug\TextRenderer.pdb"</Command>
+      <Command>copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\bin\x64\$(Configuration)\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\bin\x64\$(Configuration)\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)UnmanagedCodeTest\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)UnmanagedCodeTest\$(TargetName).pdb"
+copy "$(OutDir)$(TargetFileName)" "$(SolutionDir)RedOrc\$(TargetFileName)"
+copy "$(OutDir)$(TargetName).pdb" "$(SolutionDir)RedOrc\$(TargetName).pdb"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

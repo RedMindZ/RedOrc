@@ -4,13 +4,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0c85ace3-9105-42b4-8cc0-7353acddc4fc</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>RedOrc.py</StartupFile>
+    <StartupFile>TextRendererTest.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>RedOrc</Name>
     <RootNamespace>RedOrc</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|3.5</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +26,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="RedOrc.py" />
+    <Compile Include="TextRenderer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TextRendererTest.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.5" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

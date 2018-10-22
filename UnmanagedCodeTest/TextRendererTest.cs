@@ -75,17 +75,11 @@ namespace UnmanagedCodeTest
                         Bottom = 500
                     };
 
-                    D2D1_POINT_2F baselineOrigin = new D2D1_POINT_2F
-                    {
-                        X = 20,
-                        Y = 100
-                    };
-
                     Bitmap bmp = new Bitmap(imageProps.ImageHeight, imageProps.ImageWidth, PixelFormat.Format32bppArgb);
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
                     string text = "This is a very loooooooooooooong tessssssssssssst string";
-                    hres = TextRenderer.RenderString(text, text.Length, ref baselineOrigin, ref boundingRect, true, true, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
+                    hres = TextRenderer.RenderString(text, text.Length, ref boundingRect, true, true, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
                     if (hres < 0)
                     {
                         throw new Exception("RenderString function failed with code " + hres);

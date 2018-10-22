@@ -120,26 +120,20 @@ namespace UnmanagedCodeTest
                 Bottom = 500
             };
 
-            D2D1_POINT_2F baselineOrigin = new D2D1_POINT_2F
-            {
-                X = 0,
-                Y = 100
-            };
-
             Bitmap bmp = new Bitmap(_imageProps.ImageHeight, _imageProps.ImageWidth, PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
             Stopwatch watch = new Stopwatch();
 
             watch.Start();
-            Status = TextRenderer.RenderString(TextInput.Text, TextInput.Text.Length, ref baselineOrigin, ref boundingRect, true, DrawRectanglesInput.Checked, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
+            Status = TextRenderer.RenderString(TextInput.Text, TextInput.Text.Length, ref boundingRect, true, DrawRectanglesInput.Checked, bmpData.Scan0, out IntPtr boundingBoxesPtr, out int boundingBoxesCount);
             watch.Stop();
 
             bmp.UnlockBits(bmpData);
 
             if (Status < 0)
             {
-                DiagnosticsTextBox.AppendText($"RenderString2 failed with status {Status}\n");
+                DiagnosticsTextBox.AppendText($"RenderString failed with status {Status}\n");
                 return;
             }
 
