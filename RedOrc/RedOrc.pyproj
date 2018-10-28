@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0c85ace3-9105-42b4-8cc0-7353acddc4fc</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>TextRendererTest.py</StartupFile>
+    <StartupFile>DetectionModelTest.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,11 +25,26 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DetectionModel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DetectionModelEvaluator.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DetectionModelTest.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RedOrc.py" />
+    <Compile Include="TextGenerator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TextRenderer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TextRendererTest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utils.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

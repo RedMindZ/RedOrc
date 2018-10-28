@@ -120,6 +120,18 @@ namespace UnmanagedCodeTest
                 Bottom = 500
             };
 
+            Status = TextRenderer.GetRenderedTextInformation("abcedfghijklmnopqrstuvwxyz", ref boundingRect, out RenderedTextInformation textInformation);
+
+            if (Status < 0)
+            {
+                DiagnosticsTextBox.AppendText($"GetRenderedTextInformation failed with status {Status}\n");
+                return;
+            }
+
+            DiagnosticsTextBox.Clear();
+            DiagnosticsTextBox.AppendText($"MaxGlyphsPerLine: {textInformation.MaxGlyphsPerLine}\n");
+            DiagnosticsTextBox.AppendText($"MaxLines: {textInformation.MaxLines}\n");
+
             Bitmap bmp = new Bitmap(_imageProps.ImageHeight, _imageProps.ImageWidth, PixelFormat.Format32bppArgb);
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
@@ -137,7 +149,6 @@ namespace UnmanagedCodeTest
                 return;
             }
 
-            DiagnosticsTextBox.Clear();
             DiagnosticsTextBox.AppendText(string.Format("Render time: {0:0.##}ms\n", watch.Elapsed.TotalMilliseconds));
 
             DiagnosticsTextBox.AppendText("Bounding boxes count: " + boundingBoxesCount + "\n");

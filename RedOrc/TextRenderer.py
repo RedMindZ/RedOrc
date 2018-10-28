@@ -27,6 +27,10 @@ class WicGuid(ctypes.Structure):
     def WicPixelFormat8bppGray():
         return WicGuid(0x6fddc324, 0x4e03, 0x4bfe, 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x08)
 
+    @staticmethod
+    def WicPixelFormat96bppRGBFloat():
+        return WicGuid(0xe3fed78f, 0xe8db, 0x4acf, 0x84, 0xc1, 0xe9, 0x7f, 0x61, 0x36, 0xb3, 0x27)
+
 class ImageProperties(ctypes.Structure):
     _fields_ = \
     [
@@ -113,56 +117,92 @@ class D2D1_RECT_F(ctypes.Structure):
         self.right = right
         self.bottom = bottom
 
-class TextRenderer(object):
+class RenderedTextInformation(ctypes.Structure):
+    _fields_ = \
+    [
+        ("maxGlyphsPerLine", ctypes.c_int),
+        ("maxLines", ctypes.c_int),
+    ]
+    
     def __init__(self):
-        self._lib = ctypes.cdll.LoadLibrary("TextRenderer.dll")
+        self.maxGlyphsPerLine = 0
+        self.maxLines = 0
 
-        self._initialize = self._lib.Initialize
-        self._initialize.argtypes = []
-        self._initialize.restype = ctypes.c_int
+class TextRenderer(object):
+    _lib = ctypes.cdll.LoadLibrary("TextRenderer.dll")
+    
+    _initialize = _lib.Initialize
+    _initialize.argtypes = []
+    _initialize.restype = ctypes.c_int
+    
+    _set_image_properties = _lib.SetImageProperties
+    _set_image_properties.argtypes = [ctypes.POINTER(ImageProperties)]
+    _set_image_properties.restype = ctypes.c_int
+    
+    _set_text_properties = _lib.SetTextProperties
+    _set_text_properties.argtypes = [ctypes.POINTER(TextProperties), ctypes.POINTER(ctypes.c_bool)]
+    _set_text_properties.restype = ctypes.c_int
 
-        self._set_image_properties = self._lib.SetImageProperties
-        self._set_image_properties.argtypes = [ctypes.POINTER(ImageProperties)]
-        self._set_image_properties.restype = ctypes.c_int
+    _get_rendered_text_information = _lib.GetRenderedTextInformation
+    _get_rendered_text_information.argtypes = [ctypes.c_wchar_p, ctypes.POINTER(D2D1_RECT_F), ctypes.POINTER(RenderedTextInformation)]
+    _get_rendered_text_information.restype = ctypes.c_int
+    
+    _render_string = _lib.RenderString
+    _render_string.argtypes = [ctypes.c_wchar_p, ctypes.c_int, ctypes.POINTER(D2D1_RECT_F), ctypes.c_bool, ctypes.c_bool, ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(D2D1_RECT_F)), ctypes.POINTER(ctypes.c_int)]
+    _render_string.restype = ctypes.c_int
 
-        self._set_text_properties = self._lib.SetTextProperties
-        self._set_text_properties.argtypes = [ctypes.POINTER(TextProperties), ctypes.POINTER(ctypes.c_bool)]
-        self._set_text_properties.restype = ctypes.c_int
+    _render_rectangles = _lib.RenderRectangles
+    _render_rectangles.argtypes = [ctypes.POINTER(D2D1_RECT_F), ctypes.c_int, ctypes.c_void_p]
+    _render_rectangles.restype = ctypes.c_int
+    
+    _save_image_as_png = _lib.SaveImageAsPng
+    _save_image_as_png.argtypes = [ctypes.c_wchar_p, ctypes.c_void_p]
+    _save_image_as_png.restype = ctypes.c_int
 
-        self._render_string = self._lib.RenderString
-        self._render_string.argtypes = [ctypes.c_wchar_p, ctypes.c_int, ctypes.POINTER(D2D1_RECT_F), ctypes.c_bool, ctypes.c_bool, ctypes.c_void_p, ctypes.POINTER(ctypes.POINTER(D2D1_RECT_F)), ctypes.POINTER(ctypes.c_int)]
-        self._render_string.restype = ctypes.c_int
+    _delete_array = _lib.DeleteArray
+    _delete_array.argtypes = [ctypes.c_void_p]
+    _delete_array.restype = None
+    
+    _uninitialize = _lib.Uninitialize
+    _uninitialize.argtypes = None
+    _uninitialize.restype = None
 
-        self._delete_array = self._lib.DeleteArray
-        self._delete_array.argtypes = [ctypes.c_void_p]
-        self._delete_array.restype = None
-
-        self._uninitialize = self._lib.Uninitialize
-        self._uninitialize.argtypes = None
-        self._uninitialize.restype = None
-
-        hr = self._initialize()
+    @staticmethod
+    def Initialize():
+        hr = TextRenderer._initialize()
         if hr < 0:
             raise RuntimeError("Initialize failed with code: " + str(hr))
-
-    def SetImageProperties(self, imageProps):
-        hr = self._set_image_properties(ctypes.byref(imageProps))
+    
+    @staticmethod
+    def SetImageProperties(imageProps):
+        hr = TextRenderer._set_image_properties(ctypes.byref(imageProps))
         if hr < 0:
             raise RuntimeError("SetImageProperties failed with code: " + str(hr))
-
-    def SetTextProperties(self, textProps):
+    
+    @staticmethod
+    def SetTextProperties(textProps):
         outFontExists = ctypes.c_bool(False)
-        hr = self._set_text_properties(ctypes.byref(textProps), ctypes.byref(outFontExists))
+        hr = TextRenderer._set_text_properties(ctypes.byref(textProps), ctypes.byref(outFontExists))
         if hr < 0:
             raise RuntimeError("SetTextProperties failed with code: " + str(hr))
         
         return outFontExists
 
-    def RenderString(self, string, textBounds, clearBackground, drawBoundingBoxes, imageBuffer):
+    @staticmethod
+    def GetRenderedTextInformation(charSet, textBounds):
+        outTextInfo = RenderedTextInformation()
+        hr = TextRenderer._get_rendered_text_information(charSet, ctypes.byref(textBounds), ctypes.byref(outTextInfo))
+        if hr < 0:
+            raise RuntimeError("GetRenderedTextInformation failed with code: " + str(hr))
+        
+        return outTextInfo
+
+    @staticmethod
+    def RenderString(string, textBounds, clearBackground, drawBoundingBoxes, imageBuffer):
         boundingBoxesPtr = ctypes.POINTER(D2D1_RECT_F)()
         boundingBoxesCount = ctypes.c_int()
         
-        hr = self._render_string(string, len(string), ctypes.byref(textBounds), clearBackground, drawBoundingBoxes, imageBuffer, ctypes.byref(boundingBoxesPtr), ctypes.byref(boundingBoxesCount))
+        hr = TextRenderer._render_string(string, len(string), ctypes.byref(textBounds), clearBackground, drawBoundingBoxes, imageBuffer, ctypes.byref(boundingBoxesPtr), ctypes.byref(boundingBoxesCount))
         if hr < 0:
             raise RuntimeError("RenderString failed with code: " + str(hr))
 
@@ -171,9 +211,23 @@ class TextRenderer(object):
             rect = boundingBoxesPtr[i]
             boundingBoxes.append(D2D1_RECT_F(rect.left, rect.top, rect.right, rect.bottom))
 
-        self._delete_array(boundingBoxesPtr)
+        TextRenderer._delete_array(boundingBoxesPtr)
 
         return boundingBoxes
 
-    def Uninitialize(self):
-        self._uninitialize()
+    @staticmethod
+    def RenderRectangles(rectangles, imageBuffer):
+        rects = (D2D1_RECT_F * len(rectangles))(*rectangles)
+        hr = TextRenderer._render_rectangles(ctypes.cast(rects, ctypes.POINTER(D2D1_RECT_F)), len(rectangles), imageBuffer)
+        if hr < 0:
+            raise RuntimeError("RenderRectangles failed with code: " + str(hr))
+
+    @staticmethod
+    def SaveImageAsPng(imageName, imageBuffer):
+        hr = TextRenderer._save_image_as_png(imageName, imageBuffer)
+        if hr < 0:
+            raise RuntimeError("SaveImageAsPng failed with code: " + str(hr))
+
+    @staticmethod
+    def Uninitialize():
+        TextRenderer._uninitialize()

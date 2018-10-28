@@ -102,6 +102,7 @@
     </Compile>
     <Compile Include="GUID.cs" />
     <Compile Include="ImageProperties.cs" />
+    <Compile Include="RenderedTextInformation.cs" />
     <Compile Include="RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>

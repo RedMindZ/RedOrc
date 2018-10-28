@@ -1,28 +1,33 @@
 from PIL import Image
 import numpy as np
-from TextRenderer import *
 from time import clock
+from TextRenderer import *
+from TextGenerator import GetRandomText
 
-renderer = TextRenderer()
+TextRenderer.Initialize()
 
-imageProps = ImageProperties(500, 500, 32, WicGuid.WicPixelFormat32bppRGBA())
-renderer.SetImageProperties(imageProps)
+imageProps = ImageProperties(500, 500, 96, WicGuid.WicPixelFormat96bppRGBFloat())
+TextRenderer.SetImageProperties(imageProps)
 
-textProps = TextProperties("Gabriola", FontWeight.Normal, FontStretch.Normal, FontStyle.Normal, 0, 32)
-fontExists = renderer.SetTextProperties(textProps)
+textProps = TextProperties("Gabriola", FontWeight.Normal, FontStretch.Normal, FontStyle.Normal, 0, 56)
+fontExists = TextRenderer.SetTextProperties(textProps)
 
 textBounds = D2D1_RECT_F(20, 20, imageProps.imageHeight - 20, imageProps.imageWidth - 20)
-imageBuffer = np.ndarray(shape=(imageProps.imageHeight * imageProps.imageWidth,), dtype=np.int32)
+abc = "abcdefghijklmnopqrstuvwxyz"
+textInfo = TextRenderer.GetRenderedTextInformation(abc + abc.upper(), textBounds)
+textInfo.maxGlyphsPerLine = int(textInfo.maxGlyphsPerLine * 1.5)
+textToDraw = GetRandomText(textInfo, abc * 6 + abc.upper() + " " * 26 + "\n" * 1);
+
+imageBuffer = np.zeros(shape=(imageProps.imageHeight, imageProps.imageWidth, 3), dtype=np.float32)
 
 iterCount = 1
 startTime = clock()
 for i in range(iterCount):
-    boundingBoxes = renderer.RenderString("This is a longer paragraph. It is written here to test the performance of string rendering. By adding more glyphs, the rendering and analasis becomes more complex, leading to maximum stress.", textBounds, True, False, imageBuffer.ctypes.data_as(ctypes.c_void_p))
+    boundingBoxes = TextRenderer.RenderString(textToDraw, textBounds, True, False, imageBuffer.ctypes.data_as(ctypes.c_void_p))
+    TextRenderer.RenderRectangles(boundingBoxes, imageBuffer.ctypes.data_as(ctypes.c_void_p))
+TextRenderer.SaveImageAsPng("TestRender.png", imageBuffer.ctypes.data_as(ctypes.c_void_p))
 endTime = clock()
 
 print("Average time:", (endTime - startTime) / iterCount * 1000, "[ms]")
 
-renderer.Uninitialize()
-
-pilImage = Image.frombuffer("RGBA", (imageProps.imageWidth, imageProps.imageHeight), imageBuffer.tobytes(), "raw", "RGBA", 0, 1)
-pilImage.save("TestRender.png")
+TextRenderer.Uninitialize()

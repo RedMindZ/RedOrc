@@ -75,6 +75,8 @@ namespace UnmanagedCodeTest
                         Bottom = 500
                     };
 
+                    TextRenderer.GetRenderedTextInformation("abcedfghijklmnopqrstuvwxyz", ref boundingRect, out RenderedTextInformation textInformation);
+
                     Bitmap bmp = new Bitmap(imageProps.ImageHeight, imageProps.ImageWidth, PixelFormat.Format32bppArgb);
                     BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Height, bmp.Width), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
