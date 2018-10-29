@@ -5,8 +5,8 @@ from TextRenderer import *
 from TextGenerator import GetRandomText
 
 class DetectionModelEvaluator:
-    def __init__(self, filterCounts, kernelSizes, poolingStrides, poolingSizes, dataGen, batchSize, prefetchCount):
-        self._model = DetectionModel(filterCounts, kernelSizes, poolingStrides, poolingSizes, dataGen, batchSize, prefetchCount)
+    def __init__(self, convProps, poolProps, transConvProps, dataGen, batchSize, prefetchCount):
+        self._model = DetectionModel(convProps, poolProps, transConvProps, dataGen, batchSize, prefetchCount)
 
         total_parameters = 0
         for variable in tf.trainable_variables():
@@ -28,6 +28,7 @@ class DetectionModelEvaluator:
                 predictionIndices = modelOutput[2]
                 loss = modelOutput[3]
                 summary = modelOutput[4]
+                label = modelOutput[5]
 
                 print("Iteration:", i, "|", "Loss:", loss, end="            \r")
 

@@ -117,6 +117,12 @@ class D2D1_RECT_F(ctypes.Structure):
         self.right = right
         self.bottom = bottom
 
+    def __repr__(self):
+        return "{ " + str(self.left) + ", " + str(self.top) + ", " + str(self.right) + ", " + str(self.bottom) + " }"
+
+    def __str__(self):
+        return self.__repr__()
+
 class RenderedTextInformation(ctypes.Structure):
     _fields_ = \
     [
