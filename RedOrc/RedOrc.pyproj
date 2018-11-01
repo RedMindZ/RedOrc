@@ -34,6 +34,9 @@
     <Compile Include="DetectionModelTest.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ImageDataGenerator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RedOrc.py" />
     <Compile Include="TextGenerator.py">
       <SubType>Code</SubType>
@@ -50,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ApprovedFonts.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

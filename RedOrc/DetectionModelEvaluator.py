@@ -2,11 +2,10 @@ import tensorflow as tf
 import numpy as np
 from DetectionModel import DetectionModel
 from TextRenderer import *
-from TextGenerator import GetRandomText
 
 class DetectionModelEvaluator:
-    def __init__(self, convProps, poolProps, transConvProps, dataGen, batchSize, prefetchCount):
-        self._model = DetectionModel(convProps, poolProps, transConvProps, dataGen, batchSize, prefetchCount)
+    def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-4, inputShape=[None, None, 3], labelShape=[None, None, 3]):
+        self._model = DetectionModel(layers, dataGen, batchSize, prefetchCount, learningRate, inputShape, labelShape)
 
         total_parameters = 0
         for variable in tf.trainable_variables():
@@ -29,6 +28,7 @@ class DetectionModelEvaluator:
                 loss = modelOutput[3]
                 summary = modelOutput[4]
                 label = modelOutput[5]
+                lossWeights = modelOutput[6]
 
                 print("Iteration:", i, "|", "Loss:", loss, end="            \r")
 

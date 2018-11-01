@@ -1,6 +1,6 @@
-from DetectionModel import *
+from tensorflow.layers import Conv2D, MaxPooling2D, Conv2DTranspose
 from DetectionModelEvaluator import *
-from TextRenderer import *
+from ImageDataGenerator import *
 import os
 
 for f in os.listdir("ProgressReports"):
@@ -9,43 +9,52 @@ for f in os.listdir("ProgressReports"):
 for f in os.listdir("TensorboardLogs"):
     os.remove("TensorboardLogs\\" + f)
 
-#filterCounts = [20] * 20 + [3]
-#kernelSizes = [(7, 7)] + [(3, 3)] * (len(filterCounts) - 1)
-#poolingStrides = [(2, 2)] * len(filterCounts)
-#poolingSizes = [(2, 2)] * len(filterCounts)
-convProps =         [ConvProps(16, (7, 7)),     ConvProps(32, (5, 5)),     ConvProps(64, (3, 3)),     ConvProps(128, (3, 3)),    None,                           None,                          None,                          None,                          ConvProps(3, (3, 3))]
-poolProps =         [PoolProps((2, 2), (2, 2)), PoolProps((2, 2), (2, 2)), PoolProps((2, 2), (2, 2)), PoolProps((2, 2), (2, 2)), None,                           None,                          None,                          None,                          None                ]
-transConvProps =    [None,                      None,                      None,                      None,                      ConvProps(128, (3, 3), (2, 2)), ConvProps(64, (3, 3), (2, 2)), ConvProps(32, (5, 5), (2, 2)), ConvProps(16, (7, 7), (2, 2)), None                ]
+modelLayers = \
+[
+    Conv2D(64, (7, 7), padding="same", activation=tf.nn.relu),
+    Conv2D(96, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2DTranspose(128, (3, 3), (2, 2), padding="same", activation=tf.nn.relu),
 
-TextRenderer.Initialize()
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(192, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2DTranspose(256, (3, 3), (2, 2), padding="same", activation=tf.nn.relu),
 
-imageProps = ImageProperties(128, 128, 96, WicGuid.WicPixelFormat96bppRGBFloat())
-TextRenderer.SetImageProperties(imageProps)
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(192, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2DTranspose(128, (3, 3), (2, 2), padding="same", activation=tf.nn.relu),
 
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(96, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2DTranspose(64, (3, 3), (2, 2), padding="same", activation=tf.nn.relu),
+
+    Conv2D(3, (7, 7), padding="same", activation=tf.nn.relu)
+]
+
+availableFonts = []
+with open("ApprovedFonts.txt", "rt") as f:
+    for font in f:
+        availableFonts.append(font[:-1])
+
+imageProps = ImageProperties(256, 256, 96, WicGuid.WicPixelFormat96bppRGBFloat())
 textProps = TextProperties("Arial", FontWeight.Normal, FontStretch.Normal, FontStyle.Normal, 0, 24)
-TextRenderer.SetTextProperties(textProps)
-
-textPool = "abcdefghijklmopqrstuvwxyz"
 textBounds = D2D1_RECT_F(20, 20, imageProps.imageWidth - 20, imageProps.imageHeight - 20)
-textInfo = TextRenderer.GetRenderedTextInformation(textPool, textBounds)
+textPool = "abcdefghijklmopqrstuvwxyz"
 
+ImageDataGenerator.Initialize()
+ImageDataGenerator.SetImageProperties(imageProps)
+ImageDataGenerator.SetTextProperties(textProps)
+ImageDataGenerator.SetTextBounds(textBounds)
+ImageDataGenerator.SetTextPool(textPool)
 
-def dataGen():
-    text = GetRandomText(textInfo, textPool)
-    while True:
-        imageBuffer = np.zeros(shape=(imageProps.imageHeight, imageProps.imageWidth, 3), dtype=np.float32)
-        boundingBoxes = TextRenderer.RenderString(text, textBounds, True, False, imageBuffer.ctypes.data_as(ctypes.c_void_p))
-
-        label = np.zeros(shape=(imageProps.imageHeight, imageProps.imageWidth, 3), dtype=np.float)
-        for rect in boundingBoxes:
-            label[round(rect.top), round(rect.left), 0] = 1                             # Confidence
-            label[round(rect.top), round(rect.left), 1] = abs(rect.bottom - rect.top)   # Height
-            label[round(rect.top), round(rect.left), 2] = abs(rect.right - rect.left)   # Width
-
-        yield (imageBuffer, label)
-
-#dme = DetectionModelEvaluator(filterCounts, kernelSizes, poolingStrides, poolingSizes, dataGen, 1, 1)
-dme = DetectionModelEvaluator(convProps, poolProps, transConvProps, dataGen, 1, 1)
+dme = DetectionModelEvaluator(modelLayers, ImageDataGenerator, 1, 1, 1e-5, [imageProps.imageHeight, imageProps.imageWidth, 3], [imageProps.imageHeight, imageProps.imageWidth, 3])
 dme.Benchmark(1000000, 100)
 
-TextRenderer.Uninitialize()
+ImageDataGenerator.Uninitialize()

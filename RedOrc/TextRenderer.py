@@ -173,11 +173,15 @@ class TextRenderer(object):
     _uninitialize.argtypes = None
     _uninitialize.restype = None
 
+    IsInitialized = False
+
     @staticmethod
     def Initialize():
         hr = TextRenderer._initialize()
         if hr < 0:
             raise RuntimeError("Initialize failed with code: " + str(hr))
+
+        IsInitialized = True
     
     @staticmethod
     def SetImageProperties(imageProps):
@@ -237,3 +241,4 @@ class TextRenderer(object):
     @staticmethod
     def Uninitialize():
         TextRenderer._uninitialize()
+        IsInitialized = False
