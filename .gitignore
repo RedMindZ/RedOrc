@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /RedOrc/TensorboardLogs
 /RedOrc/ProgressReports
+/RedOrc/ProgressVideos

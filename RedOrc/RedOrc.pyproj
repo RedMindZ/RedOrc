@@ -37,6 +37,9 @@
     <Compile Include="ImageDataGenerator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ProgressReporter.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RedOrc.py" />
     <Compile Include="TextGenerator.py">
       <SubType>Code</SubType>

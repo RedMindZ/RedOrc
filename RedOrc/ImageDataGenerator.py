@@ -2,21 +2,26 @@ import numpy as np
 from TextRenderer import *
 from TextGenerator import *
 
-# Assumes that TextRenderer is already initialized
 class ImageDataGenerator:
 
     _image_props = ImageProperties(128, 128, 96, WicGuid.WicPixelFormat96bppRGBFloat())
     _text_props = TextProperties("Arial", FontWeight.Normal, FontStretch.Normal, FontStyle.Normal, 0, 24)
     _text_bounds = D2D1_RECT_F(20, 20, 108, 108)
     _text_pool = "abcdefghijklmopqrstuvwxyz" + "ABCDEFGHIJKLMOPQRSTUVWXYZ"
+    _font_list = ["Arial"]
+    _font_index = 0
 
     _image_shape = None
     _label_shape = None
+
+    _confidence_weight = 100
+    _bounding_weight = 1
     _loss_weights = None
 
     @staticmethod
     def Initialize():
-        TextRenderer.Initialize()
+        if not TextRenderer.IsInitialized:
+            TextRenderer.Initialize()
 
     @staticmethod
     def SetImageProperties(imageProps):
@@ -27,8 +32,20 @@ class ImageDataGenerator:
         ImageDataGenerator._label_shape = (ImageDataGenerator._image_props.imageHeight, ImageDataGenerator._image_props.imageWidth, 3)
 
         ImageDataGenerator._loss_weights = np.ndarray(shape=ImageDataGenerator._label_shape)
-        ImageDataGenerator._loss_weights[:, :, 0] = 100
-        ImageDataGenerator._loss_weights[:, :, 1:] = 1
+        ImageDataGenerator._loss_weights[:, :, 0] = ImageDataGenerator._confidence_weight
+        ImageDataGenerator._loss_weights[:, :, 1:] = ImageDataGenerator._bounding_weight
+
+    @staticmethod
+    def SetConfidenceWeight(confWeight):
+        ImageDataGenerator._confidence_weight = confWeight
+        if ImageDataGenerator._loss_weights != None:
+            ImageDataGenerator._loss_weights[:, :, 0] = ImageDataGenerator._confidence_weight
+
+    @staticmethod
+    def SetBoundingWeight(boundingWeight):
+        ImageDataGenerator._bounding_weight = boundingWeight
+        if ImageDataGenerator._loss_weights != None:
+            ImageDataGenerator._loss_weights[:, :, 1:] = ImageDataGenerator._bounding_weight
 
     @staticmethod
     def SetTextProperties(textProps):
@@ -42,6 +59,10 @@ class ImageDataGenerator:
     @staticmethod
     def SetTextPool(textPool):
         ImageDataGenerator._text_pool = textPool
+
+    @staticmethod
+    def SetFontList(fontList):
+        ImageDataGenerator._font_list = fontList
 
     @staticmethod
     def SetFontFace(fontName):
@@ -68,10 +89,41 @@ class ImageDataGenerator:
         ImageDataGenerator._text_props.fontEmSize = emSize
         TextRenderer.SetTextProperties(ImageDataGenerator._text_props)
 
+    @staticmethod
+    def GetTextProperties():
+        return ImageDataGenerator._text_props
+
+    @staticmethod
+    def GetImageShape():
+        return ImageDataGenerator._image_shape
+
+    @staticmethod
+    def GetLabelShape():
+        return ImageDataGenerator._label_shape
+
+    @staticmethod
+    def GetTestImages(testText):
+        images = []
+
+        for font in ImageDataGenerator._font_list:
+            ImageDataGenerator.SetFontFace(font)
+            imageBuffer = np.zeros(shape=ImageDataGenerator._image_shape, dtype=np.float32)
+            TextRenderer.RenderString(testText, ImageDataGenerator._text_bounds, True, False, imageBuffer.ctypes.data_as(ctypes.c_void_p))
+            images.append(imageBuffer)
+
+        return images
+
+    @staticmethod
+    def GetFontList():
+        return ImageDataGenerator._font_list
+
     def __iter__(self):
         return self
 
     def __next__(self):
+        ImageDataGenerator.SetFontFace(ImageDataGenerator._font_list[ImageDataGenerator._font_index])
+        ImageDataGenerator._font_index = (ImageDataGenerator._font_index + 1) % len(ImageDataGenerator._font_list)
+
         textInfo = TextRenderer.GetRenderedTextInformation(ImageDataGenerator._text_pool, ImageDataGenerator._text_bounds)
         text = GetRandomText(textInfo, ImageDataGenerator._text_pool)
         imageBuffer = np.zeros(shape=ImageDataGenerator._image_shape, dtype=np.float32)
@@ -85,6 +137,3 @@ class ImageDataGenerator:
             label[i, j, 2] = abs(rect.right - rect.left)   # Width
 
         return (imageBuffer, label, ImageDataGenerator._loss_weights)
-
-    def Uninitialize(self):
-        TextRenderer.Uninitialize()

@@ -9,7 +9,7 @@ class DetectionModel:
         self._input_label_pipeline = self._input_label_pipeline.prefetch(prefetchCount)
         self._input_label_pipeline = self._input_label_pipeline.make_one_shot_iterator().get_next()
 
-        self._input = tf.placeholder_with_default(self._input_label_pipeline[0], shape=([None] + inputShape))
+        self._input = tf.placeholder_with_default(self._input_label_pipeline[0], shape=([None, *inputShape]))
         
         lastLayer = self._input
         for layer in layers:
@@ -25,6 +25,9 @@ class DetectionModel:
         self._optimizer = tf.train.AdamOptimizer(learningRate)
         self._mop = self._optimizer.minimize(self._loss)
 
+        # Saver
+        self._saver = tf.train.Saver()
+
         # Tensorboard
         tf.summary.scalar("Loss", self._loss)
         self._summary = tf.summary.merge_all()
@@ -32,6 +35,12 @@ class DetectionModel:
 
     def InitVariables(self, session):
         session.run(tf.global_variables_initializer())
+
+    def Save(self, name, session):
+        self._saver.save(session, "Models\\" + name + ".ckpt")
+
+    def Load(self, name, session):
+        self._saver.restore(session, "Models\\" + name + ".ckpt")
 
     def Predict(self, inputImages, session):
         return session.run([self._output, self._output_indices], { self._input : inputImages })
