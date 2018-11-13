@@ -1,14 +1,31 @@
 import tensorflow as tf
 import numpy as np
-from DetectionModel import DetectionModel
-from TextRenderer import *
 import keyboard
+import os, shutil
+from time import clock, sleep
+from DetectionModel import DetectionModel
+from ImageDataGenerator import ImageDataGenerator
 
 class DetectionModelEvaluator:
     def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-4, inputShape=[None, None, 3], labelShape=[None, None, 3]):
+        print("Setting up directories...")
+
+        for d in os.listdir("ProgressReports\\"):
+            shutil.rmtree("ProgressReports\\" + d)
+
+        for f in os.listdir("TensorboardLogs"):
+            os.remove("TensorboardLogs\\" + f)
+
         self._model = DetectionModel(layers, dataGen, batchSize, prefetchCount, learningRate, inputShape, labelShape)
 
-    def EvaluateInteractively(self, postIterationAction):
+    def EvaluateInteractively(self, progressReporter):
+        
+        availableFonts = ImageDataGenerator.GetFontList()
+        
+        for font in availableFonts:
+            os.mkdir("ProgressReports\\" + font + "\\")
+            os.mkdir("ProgressReports\\" + font + "\\Activations")
+
         keepRunning = True
         def pauseCallback():
             nonlocal keepRunning
@@ -23,13 +40,30 @@ class DetectionModelEvaluator:
                 cmd = input("Action: ")
 
                 if cmd.lower() == "t":
-                    trainingStepsCount = iter + int(input("Iterations count: "))
+                    maxIter = iter + int(input("Iterations count: "))
                     keepRunning = True
-                    while iter < trainingStepsCount and keepRunning:
+                    while iter < maxIter and keepRunning:
+                        startTime = clock()
                         modelOutput = self._model.TrainStep(sess)
-                        postIterationAction(iter, self._model, sess, modelOutput)
+                        endTime = clock()
+
+                        progressReporter.Report(iter, endTime-startTime, maxIter, self._model, sess, modelOutput)
                         iter += 1
+
+                elif cmd.lower() == "a":
+                    fontName = input("Font: ")
+                    fontFound = False
+                    for (fontIndex, font) in enumerate(availableFonts):
+                        if font.lower() == fontName.lower():
+                            fontFound = True
+                            progressReporter.SaveActivations(fontIndex, iter, self._model, sess)
+                            break
+                    if not fontFound:
+                        print("The font specified is not available")
                 
+                elif cmd.lower() == "f":
+                    progressReporter.SaveFilters(iter, self._model, sess)
+
                 elif cmd.lower() == "s":
                     modelName = input("Model name: ")
                     self._model.Save(modelName, sess)
@@ -51,6 +85,8 @@ class DetectionModelEvaluator:
                         self._model.Save(modelName, sess)
                         print("Model saved.")
 
+                    self._model.Close()
+
                     break
 
                 print()
@@ -58,7 +94,7 @@ class DetectionModelEvaluator:
         keyboard.remove_hotkey(hkr)
 
     @staticmethod
-    def postIter(iter, model, session, modelOutput):
+    def postIter(iter, iterTime, maxIter, model, session, modelOutput):
         inputImages = modelOutput[0]
         prediction = modelOutput[1]
         predictionIndices = modelOutput[2]

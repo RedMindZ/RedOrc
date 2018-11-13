@@ -2,8 +2,6 @@ import re
 import os
 import subprocess
 
-
-
 imageSets = os.listdir("ProgressReports\\")
 for imageSet in imageSets:
     if os.path.isfile("ProgressVideos\\" + imageSet + ".mp4"):
@@ -12,6 +10,10 @@ for imageSet in imageSets:
     images = os.listdir("ProgressReports\\" + imageSet + "\\")
     if len(images) == 0:
         continue
+
+    for path in images:
+        if os.path.isdir("ProgressReports\\" + imageSet + "\\" + path):
+            images.remove(path)
     
     images.sort(key=lambda name: int(re.search(r"\d+", name).group()))
 
