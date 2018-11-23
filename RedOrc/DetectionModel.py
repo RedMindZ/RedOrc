@@ -1,7 +1,8 @@
 import tensorflow as tf
+from MultiConv import MultiConv
 
 class DetectionModel:
-    def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-4, inputShape=[None, None, 3], labelShape=[None, None, 3]):
+    def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-5, inputShape=[None, None, 3], labelShape=[None, None, 3]):
         
         # Main model
         self._input_label_pipeline = tf.data.Dataset.from_generator(dataGen, (tf.float32, tf.float32, tf.float32), (inputShape, labelShape, labelShape))
@@ -18,8 +19,11 @@ class DetectionModel:
             lastLayer = layer.apply(lastLayer)
             self._activations.append(lastLayer)
 
-            if type(layer) is tf.layers.Conv2D:
+            if type(layer) is tf.keras.layers.Conv2D or type(layer) is tf.keras.layers.Conv2DTranspose:
                 self._conv_weights.append(layer.trainable_weights[0])
+            elif type(layer) is MultiConv:
+                self._conv_weights += [conv.trainable_weights[0] for conv in layer.convs]
+            
 
         self._output = lastLayer
         self._output_indices = tf.where(tf.greater(self._output[0:, 0:, 0:, 0], 0.5))
@@ -53,7 +57,11 @@ class DetectionModel:
 
     def TrainStep(self, session):
         return session.run([self._loss, self._summary, self._mop])[0:-1]
-        #return session.run([self._input, self._output, self._output_indices, self._loss, self._summary, self._label, self._loss_weights, self._mop])[0:-1]
+
+    def ExportLite(self, name, session):
+        tfliteModel = tf.contrib.lite.TFLiteConverter.from_session(session, [self._input], [self._output]).convert()
+        with open("LiteModels\\" + name + ".tflite", "wb") as f:
+            f.write(tfliteModel)
 
     def ComputeActivations(self, inputImages, session):
         return session.run(self._activations, { self._input : inputImages })

@@ -37,6 +37,9 @@
     <Compile Include="ImageDataGenerator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MultiConv.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ProgressReporter.py">
       <SubType>Code</SubType>
     </Compile>
@@ -48,6 +51,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TextRendererTest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UNetModel.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils.py">

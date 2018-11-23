@@ -7,11 +7,14 @@ from DetectionModel import DetectionModel
 from ImageDataGenerator import ImageDataGenerator
 
 class DetectionModelEvaluator:
-    def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-4, inputShape=[None, None, 3], labelShape=[None, None, 3]):
+    def __init__(self, layers, dataGen, batchSize, prefetchCount, learningRate=1e-5, inputShape=[None, None, 3], labelShape=[None, None, 3]):
         print("Setting up directories...")
 
         for d in os.listdir("ProgressReports\\"):
             shutil.rmtree("ProgressReports\\" + d)
+
+        for d in os.listdir("Filters\\"):
+            shutil.rmtree("Filters\\" + d)
 
         for f in os.listdir("TensorboardLogs"):
             os.remove("TensorboardLogs\\" + f)
@@ -77,6 +80,11 @@ class DetectionModelEvaluator:
                         print("Could not load model \"" + modelName + "\".")
                     else:
                         print("Model loaded.")
+
+                elif cmd.lower() == "e":
+                    modelName = input("Model name: ")
+                    self._model.ExportLite(modelName, sess)
+                    print("Model exported.")
 
                 elif cmd.lower() == "q":
                     shouldSave = input("Save model? [y/n]: ")
