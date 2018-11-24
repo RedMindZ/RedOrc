@@ -51,8 +51,11 @@ class ProgressReporter:
                 TextRenderer.RenderRectangles(rects, imageBuffer.ctypes.data_as(ctypes.c_void_p))
                 TextRenderer.SaveImageAsPng("ProgressReports\\" + fontList[i] + "\\Step" + str(iter + 1) + ".png", imageBuffer.ctypes.data_as(ctypes.c_void_p))
 
-            model.LogToTensorboard(summary, iter + 1)
-            model.Save("Temp", session)
+            try:
+                model.LogToTensorboard(summary, iter + 1)
+                model.Save("Temp", session)
+            except:
+                pass
 
         endTime = clock()
         self._total_time += endTime - startTime

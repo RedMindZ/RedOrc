@@ -154,7 +154,7 @@ ImageDataGenerator.SetFontList(availableFonts)
 #dme = DetectionModelEvaluator(modelLayersV4, ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
 #dme.EvaluateInteractively(ProgressReporter(1000, "The quick brown fox jumps over the lazy dog."))
 
-dme = UNetModelEvaluator(ImageDataGenerator, 1, 1, 1e-4, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
+dme = UNetModelEvaluator(ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
 dme.EvaluateInteractively(ProgressReporter(1000, "The quick brown fox jumps over the lazy dog."))
 
 if TextRenderer.IsInitialized:

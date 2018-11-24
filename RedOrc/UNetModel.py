@@ -23,7 +23,7 @@ class UNetModel(DetectionModel):
 
         def DefaultConv2D(filters, kernel_size):
             init = tf.keras.initializers.glorot_normal()
-            return Conv2D(filters, kernel_size, padding="same", activation=None, kernel_initializer=init)
+            return Conv2D(filters, kernel_size, padding="same", activation=tf.nn.relu, kernel_initializer=init)
 
         def ApplyDefaultConv2D(inputs, filters, kernel_size):
             conv = DefaultConv2D(filters, kernel_size)
@@ -34,7 +34,7 @@ class UNetModel(DetectionModel):
 
         def DefaultConv2DTranspose(filters, kernel_size, strides):
             init = tf.keras.initializers.glorot_normal()
-            return Conv2DTranspose(filters, kernel_size, strides, padding="same", activation=None, kernel_initializer=init)
+            return Conv2DTranspose(filters, kernel_size, strides, padding="same", activation=tf.nn.relu, kernel_initializer=init)
 
         def ApplyDefaultConv2DTranspose(inputs, filters, kernel_size, strides):
             conv = DefaultConv2DTranspose(filters, kernel_size, strides)
@@ -91,7 +91,51 @@ class UNetModel(DetectionModel):
         #conv43 = Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu).apply(conv42)
         #conv44 = Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu).apply(conv43)
 
-        ## RedUNetV3
+        # RedUNetV3
+        # Down
+        conv00 = MultiConv([DefaultConv2D(16, (21, 3)), DefaultConv2D(16, (3, 21)), DefaultConv2D(32, (7, 7))]).apply(self._input)
+        conv01 = ApplyDefaultConv2D(conv00, 64, (3, 3))
+        conv02 = ApplyDefaultConv2D(conv01, 64, (3, 3))
+        conv03 = ApplyDefaultConv2D(conv02, 64, (3, 3))
+        maxpool00 = ApplyMaxPool2D(conv03, (2, 2), (2, 2))
+        
+        conv10 = MultiConv([DefaultConv2D(32, (11, 3)), DefaultConv2D(32, (3, 11)), DefaultConv2D(64, (7, 7))]).apply(maxpool00)
+        conv11 = ApplyDefaultConv2D(conv10, 128, (3, 3))
+        conv12 = ApplyDefaultConv2D(conv11, 128, (3, 3))
+        conv13 = ApplyDefaultConv2D(conv12, 128, (3, 3))
+        conv14 = ApplyDefaultConv2D(conv13, 128, (3, 3))
+        conv15 = ApplyDefaultConv2D(conv14, 128, (3, 3))
+        maxpool10 = ApplyMaxPool2D(conv15, (2, 2), (2, 2))
+        
+        # Mid
+        conv20 = ApplyDefaultConv2D(maxpool10, 256, (3, 3))
+        conv21 = ApplyDefaultConv2D(conv20, 256, (3, 3))
+        conv22 = ApplyDefaultConv2D(conv21, 256, (3, 3))
+        conv23 = ApplyDefaultConv2D(conv22, 256, (3, 3))
+        conv24 = ApplyDefaultConv2D(conv23, 256, (3, 3))
+        conv25 = ApplyDefaultConv2D(conv24, 256, (3, 3))
+        conv26 = ApplyDefaultConv2D(conv25, 256, (3, 3))
+        
+        # Up
+        convT30 = ApplyDefaultConv2DTranspose(conv26, 128, (4, 4), (2, 2))
+        cat30 = ApplyConcatenate([convT30, conv15])
+        conv30 = ApplyDefaultConv2D(cat30, 256, (3, 3))
+        conv31 = ApplyDefaultConv2D(conv30, 128, (3, 3))
+        conv32 = ApplyDefaultConv2D(conv31, 128, (3, 3))
+        conv33 = ApplyDefaultConv2D(conv32, 128, (3, 3))
+        conv34 = ApplyDefaultConv2D(conv33, 128, (3, 3))
+        
+        convT40 = ApplyDefaultConv2DTranspose(conv34, 64, (4, 4), (2, 2))
+        cat40 = ApplyConcatenate([convT40, conv03])
+        conv40 = ApplyDefaultConv2D(cat40, 128, (3, 3))
+        conv41 = ApplyDefaultConv2D(conv40, 64, (3, 3))
+        conv42 = ApplyDefaultConv2D(conv41, 64, (3, 3))
+        conv43 = ApplyDefaultConv2D(conv42, 64, (3, 3))
+        conv44 = ApplyDefaultConv2D(conv43, 64, (3, 3))
+        conv45 = ApplyDefaultConv2D(conv44, 64, (3, 3))
+        conv46 = ApplyDefaultConv2D(conv45, 64, (3, 3))
+
+        ## RedUNetV4
         ## Down
         #conv00 = MultiConv([DefaultConv2D(16, (21, 3)), DefaultConv2D(16, (3, 21)), DefaultConv2D(32, (7, 7))]).apply(self._input)
         #conv01 = ApplyDefaultConv2D(conv00, 64, (3, 3))
@@ -103,79 +147,36 @@ class UNetModel(DetectionModel):
         #conv11 = ApplyDefaultConv2D(conv10, 128, (3, 3))
         #conv12 = ApplyDefaultConv2D(conv11, 128, (3, 3))
         #conv13 = ApplyDefaultConv2D(conv12, 128, (3, 3))
-        #conv14 = ApplyDefaultConv2D(conv13, 128, (3, 3))
-        #conv15 = ApplyDefaultConv2D(conv14, 128, (3, 3))
-        #maxpool10 = ApplyMaxPool2D(conv15, (2, 2), (2, 2))
+        #maxpool10 = ApplyMaxPool2D(conv13, (2, 2), (2, 2))
         #
-        ## Mid
         #conv20 = ApplyDefaultConv2D(maxpool10, 256, (3, 3))
         #conv21 = ApplyDefaultConv2D(conv20, 256, (3, 3))
         #conv22 = ApplyDefaultConv2D(conv21, 256, (3, 3))
-        #conv23 = ApplyDefaultConv2D(conv22, 256, (3, 3))
-        #conv24 = ApplyDefaultConv2D(conv23, 256, (3, 3))
-        #conv25 = ApplyDefaultConv2D(conv24, 256, (3, 3))
-        #conv26 = ApplyDefaultConv2D(conv25, 256, (3, 3))
+        #maxpool20 = ApplyMaxPool2D(conv22, (2, 2), (2, 2))
+        #
+        ## Mid
+        #conv30 = ApplyDefaultConv2D(maxpool20, 512, (3, 3))
+        #conv31 = ApplyDefaultConv2D(conv30, 512, (3, 3))
+        #conv32 = ApplyDefaultConv2D(conv31, 512, (3, 3))
         #
         ## Up
-        #convT30 = ApplyDefaultConv2DTranspose(conv26, 128, (4, 4), (2, 2))
-        #cat30 = ApplyConcatenate([convT30, conv15])
-        #conv30 = ApplyDefaultConv2D(cat30, 256, (3, 3))
-        #conv31 = ApplyDefaultConv2D(conv30, 128, (3, 3))
-        #conv32 = ApplyDefaultConv2D(conv31, 128, (3, 3))
-        #conv33 = ApplyDefaultConv2D(conv32, 128, (3, 3))
-        #conv34 = ApplyDefaultConv2D(conv33, 128, (3, 3))
+        #convT40 = ApplyDefaultConv2DTranspose(conv32, 512, (4, 4), (2, 2))
+        #cat40 = ApplyConcatenate([convT40, conv22])
+        #conv40 = ApplyDefaultConv2D(cat40, 256, (3, 3))
+        #conv41 = ApplyDefaultConv2D(conv40, 256, (3, 3))
+        #conv42 = ApplyDefaultConv2D(conv41, 256, (3, 3))
         #
-        #convT40 = ApplyDefaultConv2DTranspose(conv34, 64, (4, 4), (2, 2))
-        #cat40 = ApplyConcatenate([convT40, conv03])
-        #conv40 = ApplyDefaultConv2D(cat40, 128, (3, 3))
-        #conv41 = ApplyDefaultConv2D(conv40, 64, (3, 3))
-        #conv42 = ApplyDefaultConv2D(conv41, 64, (3, 3))
-        #conv43 = ApplyDefaultConv2D(conv42, 64, (3, 3))
-        #conv44 = ApplyDefaultConv2D(conv43, 64, (3, 3))
-        #conv45 = ApplyDefaultConv2D(conv44, 64, (3, 3))
-        #conv46 = ApplyDefaultConv2D(conv45, 64, (3, 3))
-
-        # RedUNetV4
-        # Down
-        conv00 = MultiConv([DefaultConv2D(32, (21, 3)), DefaultConv2D(32, (3, 21)), DefaultConv2D(64, (7, 7))]).apply(self._input)
-        conv01 = ApplyDefaultConv2D(conv00, 128, (3, 3))
-        conv02 = ApplyDefaultConv2D(conv01, 128, (3, 3))
-        conv03 = ApplyDefaultConv2D(conv02, 128, (3, 3))
-        conv04 = ApplyDefaultConv2D(conv03, 128, (3, 3))
-        conv05 = ApplyDefaultConv2D(conv04, 128, (3, 3))
-        conv06 = ApplyDefaultConv2D(conv05, 128, (3, 3))
-        maxpool00 = ApplyMaxPool2D(conv06, (2, 2), (2, 2))
-        
-        conv10 = MultiConv([DefaultConv2D(64, (11, 3)), DefaultConv2D(64, (3, 11)), DefaultConv2D(128, (7, 7))]).apply(maxpool00)
-        conv11 = ApplyDefaultConv2D(conv10, 256, (3, 3))
-        conv12 = ApplyDefaultConv2D(conv11, 256, (3, 3))
-        conv13 = ApplyDefaultConv2D(conv12, 256, (3, 3))
-        conv14 = ApplyDefaultConv2D(conv13, 256, (3, 3))
-        maxpool10 = ApplyMaxPool2D(conv14, (2, 2), (2, 2))
-        
-        # Mid
-        conv20 = ApplyDefaultConv2D(maxpool10, 512, (3, 3))
-        conv21 = ApplyDefaultConv2D(conv20, 512, (3, 3))
-        conv22 = ApplyDefaultConv2D(conv21, 512, (3, 3))
-        
-        # Up
-        convT30 = ApplyDefaultConv2DTranspose(conv22, 256, (4, 4), (2, 2))
-        cat30 = ApplyConcatenate([convT30, conv14])
-        conv30 = ApplyDefaultConv2D(cat30, 512, (3, 3))
-        conv31 = ApplyDefaultConv2D(conv30, 256, (3, 3))
-        conv32 = ApplyDefaultConv2D(conv31, 256, (3, 3))
-        conv33 = ApplyDefaultConv2D(conv32, 256, (3, 3))
-        conv34 = ApplyDefaultConv2D(conv33, 256, (3, 3))
-        
-        convT40 = ApplyDefaultConv2DTranspose(conv34, 128, (4, 4), (2, 2))
-        cat40 = ApplyConcatenate([convT40, conv06])
-        conv40 = ApplyDefaultConv2D(cat40, 256, (3, 3))
-        conv41 = ApplyDefaultConv2D(conv40, 128, (3, 3))
-        conv42 = ApplyDefaultConv2D(conv41, 128, (3, 3))
-        conv43 = ApplyDefaultConv2D(conv42, 128, (3, 3))
-        conv44 = ApplyDefaultConv2D(conv43, 128, (3, 3))
-        conv45 = ApplyDefaultConv2D(conv44, 128, (3, 3))
-        conv46 = ApplyDefaultConv2D(conv45, 128, (3, 3))
+        #convT50 = ApplyDefaultConv2DTranspose(conv42, 256, (4, 4), (2, 2))
+        #cat50 = ApplyConcatenate([convT50, conv13])
+        #conv50 = ApplyDefaultConv2D(cat50, 128, (3, 3))
+        #conv51 = ApplyDefaultConv2D(conv50, 128, (3, 3))
+        #conv52 = ApplyDefaultConv2D(conv51, 128, (3, 3))
+        #
+        #convT60 = ApplyDefaultConv2DTranspose(conv52, 128, (4, 4), (2, 2))
+        #cat60 = ApplyConcatenate([convT60, conv03])
+        #conv60 = ApplyDefaultConv2D(cat60, 64, (3, 3))
+        #conv61 = ApplyDefaultConv2D(conv60, 64, (3, 3))
+        #conv62 = ApplyDefaultConv2D(conv61, 64, (3, 3))
 
 
 

@@ -1,2 +1,2 @@
-model_checkpoint_path: "RedOrcV3.ckpt"
-all_model_checkpoint_paths: "RedOrcV3.ckpt"
+model_checkpoint_path: "Temp.ckpt"
+all_model_checkpoint_paths: "Temp.ckpt"
