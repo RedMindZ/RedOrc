@@ -139,6 +139,38 @@ modelLayersV4 = \
     Conv2D(3, (3, 3), padding="same", activation=tf.nn.relu)
 ]
 
+modelLayersV5 = \
+[
+    MultiConv([Conv2D(16, (21, 3), padding="same", activation=tf.nn.relu), Conv2D(16, (3, 21), padding="same", activation=tf.nn.relu), Conv2D(96, (7, 7), padding="same", activation=tf.nn.relu)]),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(64, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2DTranspose(64, (4, 4), (2, 2), padding="same", activation=tf.nn.relu),
+
+    MultiConv([Conv2D(32, (7, 3), padding="same", activation=tf.nn.relu), Conv2D(32, (3, 7), padding="same", activation=tf.nn.relu), Conv2D(64, (5, 5), padding="same", activation=tf.nn.relu)]),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(128, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2DTranspose(128, (4, 4), (2, 2), padding="same", activation=tf.nn.relu),
+
+    MultiConv([Conv2D(64, (7, 3), padding="same", activation=tf.nn.relu), Conv2D(64, (3, 7), padding="same", activation=tf.nn.relu), Conv2D(128, (5, 5), padding="same", activation=tf.nn.relu)]),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    MaxPooling2D((2, 2), (2, 2), "same"),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2D(256, (3, 3), padding="same", activation=tf.nn.relu),
+    Conv2DTranspose(256, (4, 4), (2, 2), padding="same", activation=tf.nn.relu),
+
+    Conv2D(3, (3, 3), padding="same", activation=tf.nn.relu)
+]
+
 imageProps = ImageProperties(128, 128, 96, WicGuid.WicPixelFormat96bppRGBFloat())
 textProps = TextProperties("Arial", FontWeight.Normal, FontStretch.Normal, FontStyle.Normal, 0, 24)
 textBounds = D2D1_RECT_F(10, 10, imageProps.imageWidth - 10, imageProps.imageHeight - 10)
@@ -151,11 +183,12 @@ ImageDataGenerator.SetTextBounds(textBounds)
 ImageDataGenerator.SetTextPool(textPool)
 ImageDataGenerator.SetFontList(availableFonts)
 
-#dme = DetectionModelEvaluator(modelLayersV4, ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
-#dme.EvaluateInteractively(ProgressReporter(1000, "The quick brown fox jumps over the lazy dog."))
-
-dme = UNetModelEvaluator(ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
+dme = DetectionModelEvaluator(modelLayersV4, ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
+print("Trainable variables:", sum([np.prod(x.shape) for x in tf.trainable_variables()]))
 dme.EvaluateInteractively(ProgressReporter(1000, "The quick brown fox jumps over the lazy dog."))
+
+#dme = UNetModelEvaluator(ImageDataGenerator, 1, 1, 1e-5, ImageDataGenerator.GetImageShape(), ImageDataGenerator.GetLabelShape())
+#dme.EvaluateInteractively(ProgressReporter(1000, "The quick brown fox jumps over the lazy dog."))
 
 if TextRenderer.IsInitialized:
     TextRenderer.Uninitialize()
