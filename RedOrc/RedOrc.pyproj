@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0c85ace3-9105-42b4-8cc0-7353acddc4fc</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>DetectionModelTest.py</StartupFile>
+    <StartupFile>TextRenderer2Test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -50,6 +50,10 @@
     <Compile Include="TextRenderer.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TextRenderer2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TextRenderer2Test.py" />
     <Compile Include="TextRendererTest.py">
       <SubType>Code</SubType>
     </Compile>

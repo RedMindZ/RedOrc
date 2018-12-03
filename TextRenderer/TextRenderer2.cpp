@@ -63,6 +63,12 @@ int CreateInstance(TextRenderer2** instance)
 		hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&instanceRef->pWICFactory));
 	}
 
+	if (SUCCEEDED(hr))
+	{
+		instanceRef->pImageProperties = new ImageProperties2();
+		instanceRef->pTextProperties = new TextProperties2();
+	}
+
 	return hr;
 }
 
@@ -757,6 +763,9 @@ cleanup:
 
 void DestroyInstance(TextRenderer2* instance)
 {
+	delete instance->pImageProperties;
+	delete instance->pTextProperties;
+
 	SafeRelease2(&instance->pPurpleBrush);
 	SafeRelease2(&instance->pBlackBrush);
 	SafeRelease2(&instance->pRT);
